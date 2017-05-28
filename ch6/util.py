@@ -4,13 +4,14 @@ from datetime import datetime
 import math
 import time
 import tensorflow as tf
+from typing import Dict
 
 
 def print_activations(t: tf.Tensor):
     print(t.op.name, ' ', t.get_shape().as_list())
 
 
-def time_tensorflow_run(session: tf.Session, target: tf.Tensor, info_string: str, num_batches: int):
+def time_tensorflow_run(session: tf.Session, target: tf.Tensor, feed: Dict, info_string: str, num_batches: int):
     """time it takes to run each epoch"""
     num_steps_burn_in = 10
     total_duration = 0.0
@@ -18,7 +19,10 @@ def time_tensorflow_run(session: tf.Session, target: tf.Tensor, info_string: str
 
     for i in range(num_batches + num_steps_burn_in):
         start_time = time.time()
-        _ = session.run(target)
+        if feed is None:
+            _ = session.run(target)
+        else:
+            _ = session.run(target, feed_dict=feed)
         duration = time.time() - start_time
         if i >= num_steps_burn_in:
             if not i % 10:

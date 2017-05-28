@@ -1,6 +1,5 @@
 """6.1 TensorFlow实现AlexNet"""
 
-
 from ch6.util import *
 
 batch_size = 32
@@ -22,7 +21,7 @@ def inference(images):
         parameters += [kernel, biases]
         print_activations(conv1)
 
-    lrn1 = tf.nn.lrn(conv1, 4, bias=1.0, alpha=0.001/9, beta=0.75, name='lrn1')
+    lrn1 = tf.nn.lrn(conv1, 4, bias=1.0, alpha=0.001 / 9, beta=0.75, name='lrn1')
     pool1 = tf.nn.max_pool(lrn1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool1')
     print_activations(pool1)
@@ -38,13 +37,13 @@ def inference(images):
         parameters += [kernel, biases]
         print_activations(conv2)
 
-    lrn2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001/9, beta=0.75, name='lrn2')
+    lrn2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9, beta=0.75, name='lrn2')
     pool2 = tf.nn.max_pool(lrn2, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                            padding='VALID', name='pool2')
     print_activations(pool2)
 
     with tf.name_scope('conv3') as scope:
-        kernel = tf.Variable(tf.truncated_normal([3, 3, 192, 384],dtype=tf.float32, stddev=1e-1),
+        kernel = tf.Variable(tf.truncated_normal([3, 3, 192, 384], dtype=tf.float32, stddev=1e-1),
                              name='weights')
         conv = tf.nn.conv2d(pool2, kernel, strides=[1, 1, 1, 1], padding='SAME')
         biases = tf.Variable(tf.constant(0.0, shape=[384], dtype=tf.float32),
@@ -99,7 +98,8 @@ def run_benchmark():
         time_tensorflow_run(sess, pool5, 'Forward', num_batches)
 
         objective = tf.nn.l2_loss(pool5)
-        grad = tf.gradients(objective,parameters)
+        grad = tf.gradients(objective, parameters)
         time_tensorflow_run(sess, grad, 'Forward-backward', num_batches)
+
 
 run_benchmark()
