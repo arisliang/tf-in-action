@@ -98,4 +98,8 @@ def run_benchmark():
 
         time_tensorflow_run(sess, pool5, 'Forward', num_batches)
 
+        objective = tf.nn.l2_loss(pool5)
+        grad = tf.gradients(objective,parameters)
+        time_tensorflow_run(sess, grad, 'Forward-backward')
+
 run_benchmark()
