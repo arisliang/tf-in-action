@@ -100,6 +100,6 @@ def run_benchmark():
 
         objective = tf.nn.l2_loss(pool5)
         grad = tf.gradients(objective,parameters)
-        time_tensorflow_run(sess, grad, 'Forward-backward')
+        time_tensorflow_run(sess, grad, 'Forward-backward', num_batches)
 
 run_benchmark()
