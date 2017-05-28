@@ -87,10 +87,10 @@ def inference_op(input_op: tf.Tensor, keep_prob: tf.Tensor):
     fc6 = fc_op(resh1, name='fc6', n_out=4096, p=p)
     fc6_drop = tf.nn.dropout(fc6, keep_prob, name='fc6_drop')
 
-    fc7 = fc_op(fc6, name='fc7', n_out=4096, p=p)
+    fc7 = fc_op(fc6_drop, name='fc7', n_out=4096, p=p)
     fc7_drop = tf.nn.dropout(fc7, keep_prob, name='fc7_drop')
 
-    fc8 = fc_op(fc7, name='fc8', n_out=1000, p=p)
+    fc8 = fc_op(fc7_drop, name='fc8', n_out=1000, p=p)
     softmax = tf.nn.softmax(fc8)
     predictions = tf.argmax(softmax, 1)
     return predictions, softmax, fc8, p
