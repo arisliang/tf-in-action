@@ -5,13 +5,14 @@ import ch5.cifar10_input as cifar10_input
 import tensorflow as tf
 import numpy as np
 import time
+from typing import Tuple
 
 max_steps = 30000
 batch_size = 128
 data_dir = '/tmp/cifar10_data/cifar-10-batches-bin'
 
 
-def variable_with_weight_loss(shape, stddev, wl):
+def variable_with_weight_loss(shape: Tuple, stddev, wl):
     var = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
     if wl is not None:
         weight_loss = tf.multiply(tf.nn.l2_loss(var), wl, name='weight_loss')
