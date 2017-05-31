@@ -82,47 +82,47 @@ with tf.Session() as sess:
             env.render()
             rendering = True
 
-    x = np.reshape(observation, [1, D])
-    tfprob = sess.run(probability, feed_dict={observation: x})
-    action = 1 if np.random.uniform() < tfprob else 0
+        x = np.reshape(observation, [1, D])
+        tfprob = sess.run(probability, feed_dict={observations: x})
+        action = 1 if np.random.uniform() < tfprob else 0
 
-    xs.append(x)
-    y = 1- action
-    ys.append(y)
+        xs.append(x)
+        y = 1- action
+        ys.append(y)
 
-    observation, reward, done, info = env.step(action)
-    reward_sum += reward
-    drs.append(reward)
+        observation, reward, done, info = env.step(action)
+        reward_sum += reward
+        drs.append(reward)
 
-    if done:
-        episode_number += 1
-        epx = np.vstack(xs)
-        epy = np.vstack(ys)
-        epr = np.vstack(drs)
-        xs, ys, drs = [], [], []
+        if done:
+            episode_number += 1
+            epx = np.vstack(xs)
+            epy = np.vstack(ys)
+            epr = np.vstack(drs)
+            xs, ys, drs = [], [], []
 
-        discounted_epr = discount_rewards(epr)
-        discounted_epr -= np.mean(discounted_epr)
-        discounted_epr /= np.std(discounted_epr)
+            discounted_epr = discount_rewards(epr)
+            discounted_epr -= np.mean(discounted_epr)
+            discounted_epr /= np.std(discounted_epr)
 
-        tGrad = sess.run(newGrads, feed_dict={observations: epx,
-                                              input_y: epy,
-                                              advantages: discounted_epr})
-        for ix, grad in enumerate(tGrad):
-            gradBuffer[ix] += grad
+            tGrad = sess.run(newGrads, feed_dict={observations: epx,
+                                                  input_y: epy,
+                                                  advantages: discounted_epr})
+            for ix, grad in enumerate(tGrad):
+                gradBuffer[ix] += grad
 
-        if episode_number % batch_size == 0:
-            sess.run(updateGrads, feed_dict={W1Grad: gradBuffer[0],
-                                             W2Grad: gradBuffer[1]})
-            for ix, grad in enumerate(gradBuffer):
-                gradBuffer[ix] = grad * 0
+            if episode_number % batch_size == 0:
+                sess.run(updateGrads, feed_dict={W1Grad: gradBuffer[0],
+                                                 W2Grad: gradBuffer[1]})
+                for ix, grad in enumerate(gradBuffer):
+                    gradBuffer[ix] = grad * 0
 
-            print(('Average reward for episode %d : %f.' %(
-                episode_number, reward_sum / batch_size
-            )))
+                print(('Average reward for episode %d : %f.' %(
+                    episode_number, reward_sum / batch_size
+                )))
 
-            if reward_sum / batch_size > 200:
-                print('Task solved in', episode_number, 'episodes!')
+                if reward_sum / batch_size > 200:
+                    print('Task solved in', episode_number, 'episodes!')
 
-            reward_sum = 0
-        observation = env.reset()
+                reward_sum = 0
+            observation = env.reset()
